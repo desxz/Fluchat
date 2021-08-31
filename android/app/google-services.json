@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1035586976832",
+    "project_id": "fluchat-dcb2d",
+    "storage_bucket": "fluchat-dcb2d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035586976832:android:739267c7649475eae073a5",
+        "android_client_info": {
+          "package_name": "com.example.fluchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1035586976832-im5t2lip5u3j5dcut2rdaqc067q2cja0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fluchat",
+            "certificate_hash": "ec4afbb671673a44e957496bae999501bd47e387"
+          }
+        },
+        {
+          "client_id": "1035586976832-n3g71tvu3t019ig8ane4hc9s6e6s5a27.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5insKYCHfsQkEmfHUnkyZ7Q_HCL1b0Jw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1035586976832-n3g71tvu3t019ig8ane4hc9s6e6s5a27.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
