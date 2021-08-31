@@ -9,9 +9,9 @@ class FirebaseCloudFirestore {
       _instance ??= FirebaseCloudFirestore._init();
   FirebaseCloudFirestore._init();
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final CollectionReference _users =
-      FirebaseFirestore.instance.collection('users');
+  final _users = FirebaseFirestore.instance.collection('users');
+  final Stream<QuerySnapshot> userData =
+      FirebaseFirestore.instance.collection('users').snapshots();
 
   Future<void> saveUserData(UserModel usermodel) async {
     try {
@@ -20,4 +20,20 @@ class FirebaseCloudFirestore {
       debugPrint(e.toString());
     }
   }
+
+  Future<List<UserModel?>?> fecthAllUser() async {
+    List<UserModel> _userList = [];
+
+    try {
+      final response = await _users.get();
+      _userList =
+          response.docs.map((e) => UserModel().fromJson(e.data())).toList();
+      print(_userList);
+      return _userList;
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  void sendMassage() {}
 }
