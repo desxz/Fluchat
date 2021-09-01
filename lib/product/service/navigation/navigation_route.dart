@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../feature/auth/model/user_model.dart';
@@ -25,9 +24,7 @@ class NavigationRoute {
       case NavigationConstants.HOME:
         return normalNavigate(HomeView());
       case NavigationConstants.USERS:
-        return normalNavigate(FriendsView(
-          user: arguments as User,
-        ));
+        return normalNavigate(FriendsView());
       case NavigationConstants.CHAT:
         return normalNavigate(ChatView(
           user: arguments as UserModel?,

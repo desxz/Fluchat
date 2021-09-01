@@ -69,4 +69,6 @@ class FirebaseCloudFirestore {
       return [];
     }
   }
+
+  void sendMessage(String receiver, String message) {}
 }
