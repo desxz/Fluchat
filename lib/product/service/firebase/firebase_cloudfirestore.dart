@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../feature/auth/model/user_model.dart';
@@ -9,31 +10,63 @@ class FirebaseCloudFirestore {
       _instance ??= FirebaseCloudFirestore._init();
   FirebaseCloudFirestore._init();
 
-  final _users = FirebaseFirestore.instance.collection('users');
-  final Stream<QuerySnapshot> userData =
-      FirebaseFirestore.instance.collection('users').snapshots();
+  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<void> saveUserData(UserModel usermodel) async {
+    final user = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_firebaseAuth.currentUser!.uid);
+
     try {
-      await _users.add(usermodel.toJson());
+      await user.set(usermodel.toJson());
     } catch (e) {
       debugPrint(e.toString());
     }
   }
 
-  Future<List<UserModel?>?> fecthAllUser() async {
-    List<UserModel> _userList = [];
-
+  Future<QuerySnapshot<Map<String, dynamic>?>?>? searchFriendData(
+      String usermail) {
+    final _allUsers = FirebaseFirestore.instance.collection('users');
     try {
-      final response = await _users.get();
-      _userList =
+      final response = _allUsers.where('email', isEqualTo: usermail).get();
+      return response;
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<bool> addFriends(String usermail) async {
+    List<UserModel> _friendList = await searchFriendData(usermail)!.then(
+        (value) =>
+            value!.docs.map((e) => UserModel().fromJson(e.data()!)).toList());
+    final _friendsCol = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_firebaseAuth.currentUser!.uid)
+        .collection('friends')
+        .doc(_friendList[0].userid);
+    try {
+      await _friendsCol.set(_friendList[0].toJson());
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
+  Future<List<UserModel?>?> fetchFriendsData() async {
+    final _friendsCol = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_firebaseAuth.currentUser!.uid)
+        .collection('friends');
+    List<UserModel> _friendsList = [];
+    try {
+      final response = await _friendsCol.get();
+      _friendsList =
           response.docs.map((e) => UserModel().fromJson(e.data())).toList();
-      print(_userList);
-      return _userList;
+      return _friendsList;
     } catch (e) {
       debugPrint(e.toString());
+      return [];
     }
   }
-
-  void sendMassage() {}
 }

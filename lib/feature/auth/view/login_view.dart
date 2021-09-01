@@ -49,8 +49,9 @@ class LoginView extends StatelessWidget {
                         _authVM.firebaseAuthService.signInWithEmailAndPassword(
                             _authVM.inputEmailController.text,
                             _authVM.inputPasswordController.text);
-                        await NavigationService.instance
-                            .navigateToPage(path: NavigationConstants.HOME);
+                        await NavigationService.instance.navigateToPage(
+                            path: NavigationConstants.USERS,
+                            data: _authVM.firebaseAuthService.auth.currentUser);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

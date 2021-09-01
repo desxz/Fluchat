@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../feature/auth/model/user_model.dart';
 import '../../../feature/auth/view/login_view.dart';
 import '../../../feature/auth/view/register_view.dart';
+import '../../../feature/chat/view/chat_view.dart';
 import '../../../feature/home/view/home_view.dart';
+import '../../../feature/users/view/friends_view.dart';
 import '../../constants/navigation_constants.dart';
 
 class NavigationRoute {
@@ -11,14 +15,23 @@ class NavigationRoute {
 
   NavigationRoute._init();
 
-  Route<dynamic> generateRoute(RouteSettings args) {
-    switch (args.name) {
+  Route<dynamic> generateRoute(RouteSettings settings) {
+    var arguments = settings.arguments;
+    switch (settings.name) {
       case NavigationConstants.REGISTER:
         return normalNavigate(RegisterView());
       case NavigationConstants.LOGIN:
         return normalNavigate(LoginView());
       case NavigationConstants.HOME:
         return normalNavigate(HomeView());
+      case NavigationConstants.USERS:
+        return normalNavigate(FriendsView(
+          user: arguments as User,
+        ));
+      case NavigationConstants.CHAT:
+        return normalNavigate(ChatView(
+          user: arguments as UserModel?,
+        ));
 
       default:
         return MaterialPageRoute(

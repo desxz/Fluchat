@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 abstract class INavigationService {
   Future<void> navigateToPage({String? path, Object? data});
   Future<void> navigateToPageClear({String? path, Object? data});
+  void navigateToPop();
 }
 
 class NavigationService implements INavigationService {
@@ -23,5 +24,9 @@ class NavigationService implements INavigationService {
   Future<void> navigateToPageClear({String? path, Object? data}) async {
     await navigatorKey.currentState!
         .pushNamedAndRemoveUntil(path!, removeAllOldRoutes, arguments: data);
+  }
+
+  void navigateToPop() {
+    navigatorKey.currentState!.pop();
   }
 }

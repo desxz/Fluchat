@@ -28,6 +28,8 @@ class RegisterView extends StatelessWidget {
                     controller: _authVM.inputEmailController,
                     validator: (value) {
                       if (value != null && value.isNotEmpty) {
+                        _authVM.userModel.email =
+                            _authVM.inputEmailController.text;
                         return null;
                       }
                       return 'Please enter valid email';
@@ -40,6 +42,8 @@ class RegisterView extends StatelessWidget {
                       if (value != null &&
                           value.isNotEmpty &&
                           value.length >= 6) {
+                        _authVM.userModel.password =
+                            _authVM.inputPasswordController.text;
                         return null;
                       }
                       return 'Please enter valid password';
@@ -51,6 +55,8 @@ class RegisterView extends StatelessWidget {
                       if (value != null &&
                           value.isNotEmpty &&
                           value.length >= 3) {
+                        _authVM.userModel.name =
+                            _authVM.inputNameController.text;
                         return null;
                       }
                       return 'Please enter valid name';
@@ -62,6 +68,8 @@ class RegisterView extends StatelessWidget {
                       if (value != null &&
                           value.isNotEmpty &&
                           value.length >= 2) {
+                        _authVM.userModel.surname =
+                            _authVM.inputSurnameController.text;
                         return null;
                       }
                       return 'Please enter valid surname';
@@ -70,21 +78,7 @@ class RegisterView extends StatelessWidget {
                     onPressed: () async {
                       if (_authVM.formKeyRegister.currentState!.validate()) {
                         _authVM.firebaseAuthService
-                            .createUserWithEmailAndPassword(
-                                _authVM.inputEmailController.text,
-                                _authVM.inputPasswordController.text);
-
-                        _authVM.userModel.name =
-                            _authVM.inputNameController.text;
-                        _authVM.userModel.surname =
-                            _authVM.inputSurnameController.text;
-                        _authVM.userModel.email =
-                            _authVM.inputEmailController.text;
-                        _authVM.userModel.imageUrl =
-                            _authVM.inputImagePathController.text;
-
-                        _authVM.firebaseCloudFirestore
-                            .saveUserData(_authVM.userModel);
+                            .createUserWithEmailAndPassword(_authVM.userModel);
 
                         await NavigationService.instance
                             .navigateToPage(path: NavigationConstants.LOGIN);

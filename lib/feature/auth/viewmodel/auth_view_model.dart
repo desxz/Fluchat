@@ -10,29 +10,24 @@ part 'auth_view_model.g.dart';
 class AuthViewModel = _AuthViewModelBase with _$AuthViewModel;
 
 abstract class _AuthViewModelBase with Store {
-  @observable
-  TextEditingController inputEmailController = TextEditingController();
-
-  @observable
-  TextEditingController inputPasswordController = TextEditingController();
-
-  @observable
-  TextEditingController inputNameController = TextEditingController();
-
-  @observable
-  TextEditingController inputSurnameController = TextEditingController();
-
-  @observable
-  TextEditingController inputImagePathController = TextEditingController();
-
-  @observable
-  UserModel userModel = UserModel();
-
   final formKeyLogin = GlobalKey<FormState>();
 
   final formKeyRegister = GlobalKey<FormState>();
 
-  final FirebaseAuthService firebaseAuthService = FirebaseAuthService.instance;
-  final FirebaseCloudFirestore firebaseCloudFirestore =
+  FirebaseAuthService firebaseAuthService = FirebaseAuthService.instance;
+
+  FirebaseCloudFirestore firebaseCloudFirestore =
       FirebaseCloudFirestore.instance;
+
+  TextEditingController inputEmailController = TextEditingController();
+
+  TextEditingController inputPasswordController = TextEditingController();
+
+  TextEditingController inputNameController = TextEditingController();
+
+  TextEditingController inputSurnameController = TextEditingController();
+
+  TextEditingController inputImagePathController = TextEditingController();
+
+  UserModel userModel = UserModel();
 }

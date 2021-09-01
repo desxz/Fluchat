@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../feature/auth/model/user_model.dart';
+import 'firebase_cloudfirestore.dart';
+
 class FirebaseAuthService {
   static FirebaseAuthService? _instance;
   static FirebaseAuthService get instance =>
@@ -8,14 +11,18 @@ class FirebaseAuthService {
   FirebaseAuthService._init();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseAuth get auth => _auth;
+  final FirebaseCloudFirestore _firestore = FirebaseCloudFirestore.instance;
 
-  Future<User?> createUserWithEmailAndPassword(
-      String email, String password) async {
+  Future<User?> createUserWithEmailAndPassword(UserModel usermodel) async {
     try {
       final _authResult = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+          email: usermodel.email ?? '', password: usermodel.password ?? '');
       final User? user = _authResult.user;
-      return user!;
+
+      usermodel.userid = user!.uid;
+      await _firestore.saveUserData(usermodel);
+      return user;
     } catch (e) {
       debugPrint(e.toString());
       return null;
