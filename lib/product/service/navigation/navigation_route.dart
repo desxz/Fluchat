@@ -4,8 +4,8 @@ import '../../../feature/auth/model/user_model.dart';
 import '../../../feature/auth/view/login_view.dart';
 import '../../../feature/auth/view/register_view.dart';
 import '../../../feature/chat/view/chat_view.dart';
+import '../../../feature/friends/view/friends_view.dart';
 import '../../../feature/home/view/home_view.dart';
-import '../../../feature/users/view/friends_view.dart';
 import '../../constants/navigation_constants.dart';
 
 class NavigationRoute {

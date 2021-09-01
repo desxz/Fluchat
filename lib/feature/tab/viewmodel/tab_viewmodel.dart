@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../chat/view/chat_view.dart';
-import '../../users/view/friends_view.dart';
+import '../../friends/view/friends_view.dart';
 
 part 'tab_viewmodel.g.dart';
 
