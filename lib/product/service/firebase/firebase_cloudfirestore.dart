@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../feature/auth/model/user_model.dart';
+import '../../../feature/chat/model/message_model.dart';
 
 class FirebaseCloudFirestore {
   static FirebaseCloudFirestore? _instance;
@@ -70,5 +71,20 @@ class FirebaseCloudFirestore {
     }
   }
 
-  void sendMessage(String receiver, String message) {}
+  Future<bool?> sendMessage(String message, String receiverId) async {
+    final _chatRoom = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_firebaseAuth.currentUser!.uid)
+        .collection('friends')
+        .doc(receiverId)
+        .collection('chatroom');
+    try {
+      await _chatRoom.add(
+          new MessageModel(message: message, receiverId: receiverId).toJson());
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
 }

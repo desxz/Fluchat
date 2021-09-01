@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../../product/service/firebase/firebase_cloudfirestore.dart';
@@ -13,6 +14,8 @@ abstract class _FriendsViewModelBase with Store {
   }
 
   final firebaseCloudFireStore = FirebaseCloudFirestore.instance;
+
+  final TextEditingController messageTextController = TextEditingController();
 
   @observable
   bool isLoadingData = false;
