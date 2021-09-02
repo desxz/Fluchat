@@ -27,7 +27,7 @@ class NavigationRoute {
         return normalNavigate(FriendsView());
       case NavigationConstants.CHAT:
         return normalNavigate(ChatView(
-          user: arguments as UserModel?,
+          user: arguments as UserModel,
         ));
 
       default:

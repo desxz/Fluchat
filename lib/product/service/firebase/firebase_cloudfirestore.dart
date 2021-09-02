@@ -71,15 +71,58 @@ class FirebaseCloudFirestore {
     }
   }
 
+  Future<CollectionReference<Map<String, dynamic>>?> findChatRoom(
+      String receiverId) async {
+    var _messageList = [];
+
+    final _chatRoom = await FirebaseFirestore.instance
+        .collection('chatrooms')
+        .doc(_firebaseAuth.currentUser!.uid + receiverId)
+        .collection('messages')
+        .get()
+        .then((value) => _messageList.addAll(value.docs));
+    if (_messageList.isEmpty) {
+      return FirebaseFirestore.instance
+          .collection('chatrooms')
+          .doc(receiverId + _firebaseAuth.currentUser!.uid)
+          .collection('messages');
+    } else {
+      return FirebaseFirestore.instance
+          .collection('chatrooms')
+          .doc(_firebaseAuth.currentUser!.uid + receiverId)
+          .collection('messages');
+    }
+  }
+
+  Future<Query<Map<String, dynamic>>?> findChatRoomByOrder(
+      String receiverId) async {
+    var _messageList = [];
+
+    final _chatRoom = await FirebaseFirestore.instance
+        .collection('chatrooms')
+        .doc(_firebaseAuth.currentUser!.uid + receiverId)
+        .collection('messages')
+        .get()
+        .then((value) => _messageList.addAll(value.docs));
+    if (_messageList.isEmpty) {
+      return FirebaseFirestore.instance
+          .collection('chatrooms')
+          .doc(receiverId + _firebaseAuth.currentUser!.uid)
+          .collection('messages')
+          .orderBy('messageTime', descending: false);
+    } else {
+      return FirebaseFirestore.instance
+          .collection('chatrooms')
+          .doc(_firebaseAuth.currentUser!.uid + receiverId)
+          .collection('messages')
+          .orderBy('messageTime', descending: false);
+    }
+  }
+
   Future<bool?> sendMessage(String message, String receiverId) async {
-    final _chatRoom = FirebaseFirestore.instance
-        .collection('users')
-        .doc(_firebaseAuth.currentUser!.uid)
-        .collection('friends')
-        .doc(receiverId)
-        .collection('chatroom');
+    final _chatRoom = await findChatRoom(receiverId);
     try {
-      await _chatRoom.add(
+      await _chatRoom!.add(
           new MessageModel(message: message, receiverId: receiverId).toJson());
       return true;
     } catch (e) {

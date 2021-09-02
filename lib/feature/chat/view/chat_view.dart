@@ -1,52 +1,117 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../../product/service/navigation/navigation_service.dart';
 import '../../auth/model/user_model.dart';
-import '../../friends/viewmodel/friends_viewmodel.dart';
+import '../model/message_model.dart';
+import '../viewmodel/chat_viewmodel.dart';
 
+// ignore: must_be_immutable
 class ChatView extends StatelessWidget {
-  ChatView({Key? key, this.user}) : super(key: key);
+  final UserModel user;
 
-  final UserModel? user;
-  final _userVM = FriendsViewModel();
-  final Stream<QuerySnapshot> _messageStream =
-      FirebaseFirestore.instance.collection('users').snapshots();
+  ChatView({
+    Key? key,
+    required this.user,
+  }) : super(key: key) {
+    _chatVM = ChatViewModel(user: user);
+  }
+
+  late ChatViewModel _chatVM;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        leading: IconButton(
-            onPressed: () => NavigationService.instance.navigateToPop(),
-            icon: Icon(Icons.arrow_back)),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            CircleAvatar(
-                radius: 20,
-                child: CachedNetworkImage(imageUrl: user?.imageUrl ?? '')),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.07,
-            ),
-            Text('${user?.name} ${user?.surname}'),
-          ],
-        ),
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.phone)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.videocam)),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(child: Container()),
-          buildMessageBoxPadding,
-        ],
-      ),
+      appBar: buildAppBar(context),
+      body: buildChatViewBody,
     );
   }
+
+  AppBar buildAppBar(BuildContext context) {
+    return AppBar(
+      centerTitle: false,
+      leading: IconButton(
+          onPressed: () => NavigationService.instance.navigateToPop(),
+          icon: Icon(Icons.arrow_back)),
+      title: buildAppBarTitle(context),
+      actions: [
+        IconButton(onPressed: () {}, icon: Icon(Icons.phone)),
+        IconButton(onPressed: () {}, icon: Icon(Icons.videocam)),
+      ],
+    );
+  }
+
+  Row buildAppBarTitle(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        CircleAvatar(
+            radius: 20,
+            child: CachedNetworkImage(imageUrl: user.imageUrl ?? '')),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.07,
+        ),
+        Text('${user.name} ${user.surname}'),
+      ],
+    );
+  }
+
+  Column get buildChatViewBody {
+    return Column(
+      children: [
+        buildScrollableMessageArea,
+        buildMessageBoxPadding,
+      ],
+    );
+  }
+
+  Expanded get buildScrollableMessageArea => Expanded(
+        child: StreamBuilder<QuerySnapshot>(
+          stream: _chatVM.chatRoom,
+          builder: (context, snapshot) {
+            if (snapshot.hasError)
+              return Center(child: Text('Something went wrong!'));
+            if (snapshot.connectionState == ConnectionState.waiting)
+              return Center(
+                child: CircularProgressIndicator.adaptive(),
+              );
+
+            if (snapshot.hasData) {
+              List<MessageModel> _messages = snapshot.data!.docs
+                  .map((e) =>
+                      MessageModel().fromJson(e.data() as Map<String, dynamic>))
+                  .toList();
+              _chatVM.messages[user.userid!] = _messages;
+            }
+            return Observer(builder: (_) {
+              return ListView.builder(
+                  itemCount: _chatVM.messages[user.userid!]?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      crossAxisAlignment:
+                          _chatVM.messages[user.userid!]![index].receiverId ==
+                                  user.userid
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          color: _chatVM.messages[user.userid!]![index]
+                                      .receiverId ==
+                                  user.userid
+                              ? Colors.blue
+                              : Colors.green,
+                          child: Text(
+                              _chatVM.messages[user.userid!]![index].message!),
+                        ),
+                      ],
+                    );
+                  });
+            });
+          },
+        ),
+      );
 
   Padding get buildMessageBoxPadding {
     return Padding(
@@ -57,7 +122,7 @@ class ChatView extends StatelessWidget {
 
   TextField get buildTextFieldMessage {
     return TextField(
-      controller: _userVM.messageTextController,
+      controller: _chatVM.messageTextController,
       decoration: InputDecoration(
           border: OutlineInputBorder().copyWith(
             borderRadius: BorderRadius.circular(40),
@@ -77,8 +142,8 @@ class ChatView extends StatelessWidget {
       IconButton(onPressed: sendChatMessage, icon: Icon(Icons.send));
 
   Future<void> sendChatMessage() async {
-    await _userVM.firebaseCloudFireStore
-        .sendMessage(_userVM.messageTextController.text, user!.userid!);
-    _userVM.messageTextController.text = '';
+    await _chatVM.firebaseCloudFireStore
+        .sendMessage(_chatVM.messageTextController.text, user.userid!);
+    _chatVM.messageTextController.text = '';
   }
 }
