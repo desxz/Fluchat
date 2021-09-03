@@ -7,6 +7,7 @@ import '../viewmodel/auth_view_model.dart';
 import 'components/mobile_form_state_widget.dart';
 import 'components/otp_state_widget.dart';
 
+// ignore: constant_identifier_names
 enum VerificationState { MOBILE_FORM_STATE, OTP_STATE }
 
 class VerificationView extends StatelessWidget {

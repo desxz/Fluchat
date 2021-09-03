@@ -26,6 +26,7 @@ class NavigationService implements INavigationService {
         .pushNamedAndRemoveUntil(path!, removeAllOldRoutes, arguments: data);
   }
 
+  @override
   void navigateToPop() {
     navigatorKey.currentState!.pop();
   }

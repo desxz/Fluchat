@@ -11,7 +11,7 @@ class FirebaseCloudFirestore {
       _instance ??= FirebaseCloudFirestore._init();
   FirebaseCloudFirestore._init();
 
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<void> saveUserData(UserModel usermodel) async {
     final user = FirebaseFirestore.instance

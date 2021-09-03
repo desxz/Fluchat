@@ -71,12 +71,14 @@ class ChatView extends StatelessWidget {
         child: StreamBuilder<QuerySnapshot>(
           stream: _chatVM.chatRoom,
           builder: (context, snapshot) {
-            if (snapshot.hasError)
+            if (snapshot.hasError) {
               return Center(child: Text('Something went wrong!'));
-            if (snapshot.connectionState == ConnectionState.waiting)
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
                 child: CircularProgressIndicator.adaptive(),
               );
+            }
 
             if (snapshot.hasData) {
               List<MessageModel> _messages = snapshot.data!.docs

@@ -25,7 +25,9 @@ class FirebaseAuthService {
         codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
         timeout: timeoutDuration ?? Duration(seconds: 90),
       );
-    } catch (e) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   Future<User?> signInWithPhoneAuthCredential(
