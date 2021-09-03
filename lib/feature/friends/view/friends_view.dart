@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -8,9 +9,10 @@ import '../viewmodel/friends_viewmodel.dart';
 import 'components/friend_card.dart';
 
 class FriendsView extends StatelessWidget {
-  FriendsView({Key? key}) : super(key: key);
+  FriendsView({Key? key, required this.currentUser}) : super(key: key);
 
-  final _userVM = FriendsViewModel();
+  final User currentUser;
+  final _friendsVM = FriendsViewModel();
   final _authVM = AuthViewModel();
 
   @override
@@ -56,29 +58,25 @@ class FriendsView extends StatelessWidget {
 
   TextField get buildTextFieldAddNewFriendEmail {
     return TextField(
-      controller: _authVM.inputEmailController,
+      controller: _friendsVM.inputEmailController,
       decoration: InputDecoration(hintText: 'Email'),
     );
   }
 
   TextButton get buildAddNewFriendsButtonInDialog {
     return TextButton(
-      onPressed: addNewFriendFunction,
+      onPressed: _friendsVM.inputEmailController.text ==
+              _authVM.firebaseAuthService.auth.currentUser!.email
+          ? () {}
+          : _friendsVM.addNewFriendFunction,
       child: Text('Add friend'),
     );
-  }
-
-  Future<void> addNewFriendFunction() async {
-    await _userVM.firebaseCloudFireStore
-        .addFriends(_authVM.inputEmailController.text);
-    NavigationService.instance.navigateToPop();
-    await _userVM.getFriendsData();
   }
 
   Observer get buildBodyObserver {
     return Observer(
       builder: (_) {
-        return _userVM.isLoadingData
+        return _friendsVM.isLoadingData
             ? buildLoadingIndicator
             : buildFriendsBodyColumn;
       },
@@ -100,7 +98,7 @@ class FriendsView extends StatelessWidget {
 
   ListView get buildFriendsCardBuilder {
     return ListView.builder(
-      itemCount: _userVM.friendsList?.length ?? 0,
+      itemCount: _friendsVM.friendsList?.length ?? 0,
       itemBuilder: (context, index) => buildFriendsCardObserver(index),
     );
   }
@@ -108,7 +106,7 @@ class FriendsView extends StatelessWidget {
   Observer buildFriendsCardObserver(int index) {
     return Observer(builder: (_) {
       return _authVM.firebaseAuthService.auth.currentUser!.uid ==
-              _userVM.friendsList?[index]?.userid
+              _friendsVM.friendsList?[index]?.userid
           ? buildEmptyWidget
           : buildFriendCardTappableWidget(index);
     });
@@ -120,11 +118,11 @@ class FriendsView extends StatelessWidget {
     return InkWell(
       onTap: () => NavigationService.instance.navigateToPage(
           path: NavigationConstants.CHAT,
-          data: _userVM.friendsList?[index] ?? []),
+          data: _friendsVM.friendsList?[index] ?? []),
       child: FriendCard(
-        name: _userVM.friendsList?[index]?.name,
-        surname: _userVM.friendsList?[index]?.surname,
-        imageUrl: _userVM.friendsList?[index]?.imageUrl,
+        name: _friendsVM.friendsList?[index]?.name,
+        surname: _friendsVM.friendsList?[index]?.surname,
+        imageUrl: _friendsVM.friendsList?[index]?.imageUrl,
       ),
     );
   }

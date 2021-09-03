@@ -1,7 +1,7 @@
 class NavigationConstants {
-  static const LOGIN = '/login';
+  static const AUTH = '/auth';
   static const REGISTER = '/register';
   static const HOME = '/home';
   static const CHAT = '/chat';
-  static const USERS = '/users';
+  static const FRIENDS = '/users';
 }

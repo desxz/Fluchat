@@ -41,5 +41,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<string>To choose an avatar</string>
+	<key>NSCameraUsageDescription</key>
+	<string>To take a photo</string>
 </dict>
 </plist>

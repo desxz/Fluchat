@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'FluChat',
       debugShowCheckedModeBanner: false,
-      initialRoute: NavigationConstants.REGISTER,
+      initialRoute: NavigationConstants.AUTH,
       navigatorKey: NavigationService.instance.navigatorKey,
       onGenerateRoute: NavigationRoute.instance.generateRoute,
     );

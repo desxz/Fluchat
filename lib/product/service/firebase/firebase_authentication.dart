@@ -1,48 +1,44 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../feature/auth/model/user_model.dart';
-import 'firebase_cloudfirestore.dart';
-
 class FirebaseAuthService {
   static FirebaseAuthService? _instance;
   static FirebaseAuthService get instance =>
       _instance ??= FirebaseAuthService._init();
   FirebaseAuthService._init();
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseAuth get auth => _auth;
-  final FirebaseCloudFirestore _firestore = FirebaseCloudFirestore.instance;
+  FirebaseAuth get auth => FirebaseAuth.instance;
 
-  Future<User?> createUserWithEmailAndPassword(UserModel usermodel) async {
+  Future<void> firebaseVerifyPhoneNumber(
+      String phoneNumber,
+      void Function(PhoneAuthCredential) verificationCompleted,
+      void Function(FirebaseAuthException) verificationFailed,
+      void Function(String, int?) codeSent,
+      void Function(String) codeAutoRetrievalTimeout,
+      Duration? timeoutDuration) async {
     try {
-      final _authResult = await _auth.createUserWithEmailAndPassword(
-          email: usermodel.email ?? '', password: usermodel.password ?? '');
-      final User? user = _authResult.user;
-
-      usermodel.userid = user!.uid;
-      await _firestore.saveUserData(usermodel);
-      return user;
-    } catch (e) {
-      debugPrint(e.toString());
-      return null;
-    }
+      await auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: verificationCompleted,
+        verificationFailed: verificationFailed,
+        codeSent: codeSent,
+        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
+        timeout: timeoutDuration ?? Duration(seconds: 90),
+      );
+    } catch (e) {}
   }
 
-  Future<User?> signInWithEmailAndPassword(
-      String email, String password) async {
+  Future<User?> signInWithPhoneAuthCredential(
+      PhoneAuthCredential credential) async {
     try {
-      final _authResult = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      final User? user = _authResult.user;
-      return user;
+      final _credential = await auth.signInWithCredential(credential);
+      return _credential.user;
     } catch (e) {
       debugPrint(e.toString());
-      return null;
     }
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
+    await auth.signOut();
   }
 }

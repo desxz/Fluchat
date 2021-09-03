@@ -96,14 +96,27 @@ class ChatView extends StatelessWidget {
                               ? CrossAxisAlignment.end
                               : CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          color: _chatVM.messages[user.userid!]![index]
-                                      .receiverId ==
-                                  user.userid
-                              ? Colors.blue
-                              : Colors.green,
-                          child: Text(
-                              _chatVM.messages[user.userid!]![index].message!),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            constraints: BoxConstraints(
+                              minWidth: MediaQuery.of(context).size.width / 4,
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.75,
+                              minHeight: 40,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _chatVM.messages[user.userid!]![index]
+                                          .receiverId ==
+                                      user.userid
+                                  ? Colors.blue
+                                  : Colors.green,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(_chatVM
+                                .messages[user.userid!]![index].message!),
+                          ),
                         ),
                       ],
                     );
