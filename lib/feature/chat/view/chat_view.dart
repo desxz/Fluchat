@@ -53,7 +53,7 @@ class ChatView extends StatelessWidget {
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.07,
         ),
-        Text('${user.name} ${user.surname}'),
+        Text('$user.nameSurname'),
       ],
     );
   }

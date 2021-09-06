@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'register_viewmodel.dart';
+part of 'tab_viewmodel.dart';
 
 // **************************************************************************
 // StoreGenerator
@@ -8,26 +8,27 @@ part of 'register_viewmodel.dart';
 
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
-mixin _$RegisterViewModel on _RegisterViewModelBase, Store {
-  final _$imageAtom = Atom(name: '_RegisterViewModelBase.image');
+mixin _$TabViewModel on _TabViewModelBase, Store {
+  final _$selectedNavBarItemAtom =
+      Atom(name: '_TabViewModelBase.selectedNavBarItem');
 
   @override
-  File? get image {
-    _$imageAtom.reportRead();
-    return super.image;
+  int get selectedNavBarItem {
+    _$selectedNavBarItemAtom.reportRead();
+    return super.selectedNavBarItem;
   }
 
   @override
-  set image(File? value) {
-    _$imageAtom.reportWrite(value, super.image, () {
-      super.image = value;
+  set selectedNavBarItem(int value) {
+    _$selectedNavBarItemAtom.reportWrite(value, super.selectedNavBarItem, () {
+      super.selectedNavBarItem = value;
     });
   }
 
   @override
   String toString() {
     return '''
-image: ${image}
+selectedNavBarItem: ${selectedNavBarItem}
     ''';
   }
 }

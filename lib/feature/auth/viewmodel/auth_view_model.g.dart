@@ -26,6 +26,52 @@ mixin _$AuthViewModel on _AuthViewModelBase, Store {
     });
   }
 
+  final _$isLoadingUploadDataAtom =
+      Atom(name: '_AuthViewModelBase.isLoadingUploadData');
+
+  @override
+  bool get isLoadingUploadData {
+    _$isLoadingUploadDataAtom.reportRead();
+    return super.isLoadingUploadData;
+  }
+
+  @override
+  set isLoadingUploadData(bool value) {
+    _$isLoadingUploadDataAtom.reportWrite(value, super.isLoadingUploadData, () {
+      super.isLoadingUploadData = value;
+    });
+  }
+
+  final _$imageAtom = Atom(name: '_AuthViewModelBase.image');
+
+  @override
+  File? get image {
+    _$imageAtom.reportRead();
+    return super.image;
+  }
+
+  @override
+  set image(File? value) {
+    _$imageAtom.reportWrite(value, super.image, () {
+      super.image = value;
+    });
+  }
+
+  final _$userModelAtom = Atom(name: '_AuthViewModelBase.userModel');
+
+  @override
+  UserModel? get userModel {
+    _$userModelAtom.reportRead();
+    return super.userModel;
+  }
+
+  @override
+  set userModel(UserModel? value) {
+    _$userModelAtom.reportWrite(value, super.userModel, () {
+      super.userModel = value;
+    });
+  }
+
   final _$currentStateAtom = Atom(name: '_AuthViewModelBase.currentState');
 
   @override
@@ -45,6 +91,9 @@ mixin _$AuthViewModel on _AuthViewModelBase, Store {
   String toString() {
     return '''
 isLoadingVerification: ${isLoadingVerification},
+isLoadingUploadData: ${isLoadingUploadData},
+image: ${image},
+userModel: ${userModel},
 currentState: ${currentState}
     ''';
   }

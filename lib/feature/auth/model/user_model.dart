@@ -6,17 +6,14 @@ part 'user_model.g.dart';
 class UserModel {
   String? userid;
   String? phoneNumber;
-  String? name;
-  String? surname;
+  String? nameSurname;
   String? imageUrl;
 
   UserModel({
     this.userid,
     this.phoneNumber,
-    this.name,
-    this.surname,
-    this.imageUrl =
-        'https://cdn.mos.cms.futurecdn.net/THCiUmVZcgxHodGCK3EyYo-480-80.jpg',
+    this.nameSurname,
+    this.imageUrl = 'http://www.gazeteguncel.com/d/news/185912.jpg',
   });
 
   UserModel fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);

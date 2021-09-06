@@ -12,17 +12,29 @@ class FirebaseStorageService {
   firebase_storage.FirebaseStorage storage =
       firebase_storage.FirebaseStorage.instance;
 
-  Future<bool?> uploadFile(String filePath, String userId) async {
-    final _file = File(filePath);
+  Future<bool?> uploadFile({String? filePath, String? uploadPath}) async {
+    final _file = File(filePath ?? '');
 
     try {
       await firebase_storage.FirebaseStorage.instance
-          .ref('profile_photos/$userId.png')
+          .ref(uploadPath ?? '')
           .putFile(_file);
       return true;
     } catch (e) {
       debugPrint(e.toString());
       return false;
+    }
+  }
+
+  Future<String?> getFileDownloadUrl(String downloadPath) async {
+    try {
+      final downloadURL = await firebase_storage.FirebaseStorage.instance
+          .ref(downloadPath)
+          .getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      debugPrint(e.toString());
+      return 'false';
     }
   }
 }

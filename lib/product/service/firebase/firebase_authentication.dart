@@ -7,7 +7,7 @@ class FirebaseAuthService {
       _instance ??= FirebaseAuthService._init();
   FirebaseAuthService._init();
 
-  FirebaseAuth get auth => FirebaseAuth.instance;
+  final auth = FirebaseAuth.instance;
 
   Future<void> firebaseVerifyPhoneNumber(
       String phoneNumber,

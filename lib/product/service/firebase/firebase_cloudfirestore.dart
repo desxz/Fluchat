@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,19 @@ class FirebaseCloudFirestore {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
+  Future<UserModel?>? getCurrentUserData(String uid) {
+    try {
+      final _currentUser = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get()
+          .then((value) => UserModel().fromJson(value.data()!));
+      return _currentUser;
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
   Future<void> saveUserData(UserModel usermodel) async {
     final user = FirebaseFirestore.instance
         .collection('users')
@@ -26,18 +40,19 @@ class FirebaseCloudFirestore {
   }
 
   Future<QuerySnapshot<Map<String, dynamic>?>?>? searchFriendData(
-      String usermail) {
+      String userPhoneNumber) {
     final _allUsers = FirebaseFirestore.instance.collection('users');
     try {
-      final response = _allUsers.where('email', isEqualTo: usermail).get();
+      final response =
+          _allUsers.where('phoneNumber', isEqualTo: userPhoneNumber).get();
       return response;
     } catch (e) {
       debugPrint(e.toString());
     }
   }
 
-  Future<bool> addFriends(String usermail) async {
-    List<UserModel> _friendList = await searchFriendData(usermail)!.then(
+  Future<bool> addFriends(String userPhoneNumber) async {
+    List<UserModel> _friendList = await searchFriendData(userPhoneNumber)!.then(
         (value) =>
             value!.docs.map((e) => UserModel().fromJson(e.data()!)).toList());
     final _friendsCol = FirebaseFirestore.instance
@@ -54,10 +69,64 @@ class FirebaseCloudFirestore {
     }
   }
 
+  Future<bool?> addFriendsFromPhoneDrirectory(
+      Iterable<Contact> contacts) async {
+    for (var item in contacts) {
+      try {
+        Map<String, dynamic> map = {};
+        if (item.phones != null && item.phones!.isNotEmpty) {
+          String? phoneNumber;
+
+          print('DOGRU GİDİYOR!');
+          print(item.phones.toString());
+          phoneNumber = item.phones!.first.value!.replaceAll(' ', '');
+          final currentContact = await searchFriendData(phoneNumber);
+          if (currentContact!.docs.isNotEmpty) {
+            map = currentContact.docs[0].data()!;
+            print(map.toString());
+            print('BURADA ŞUAN');
+
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(_firebaseAuth.currentUser!.uid)
+                .collection('friends')
+                .doc(map['userid'])
+                .set(map);
+          }
+        } else {
+          print('BURAYA DÜŞTÜ');
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Future<bool?> addFriendsWithInvite(String userPhoneNumber) async {
+    List<UserModel> _friendList = await searchFriendData(userPhoneNumber)!.then(
+        (value) =>
+            value!.docs.map((e) => UserModel().fromJson(e.data()!)).toList());
+    final invitations = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_friendList[0].userid)
+        .collection('invitations')
+        .doc(_firebaseAuth.currentUser!.uid);
+    final userData = await getCurrentUserData(_firebaseAuth.currentUser!.uid);
+    try {
+      final response = invitations.set(userData!.toJson());
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
   Future<List<UserModel?>?> fetchFriendsData() async {
     final _friendsCol = FirebaseFirestore.instance
         .collection('users')
-        .doc(_firebaseAuth.currentUser!.uid)
+        .doc(_firebaseAuth.currentUser?.uid)
         .collection('friends');
     List<UserModel> _friendsList = [];
     try {
