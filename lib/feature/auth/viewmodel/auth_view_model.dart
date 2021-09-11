@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -46,9 +47,17 @@ abstract class _AuthViewModelBase with Store {
   @observable
   var isLoadingUploadData = false;
 
+  @observable
+  var resendButtonState = false;
+
   User? user;
 
   String? verifyId;
+
+  int? forceResendingToken;
+
+  @observable
+  int timeOTPConfirmDuration = 120;
 
   @observable
   File? image;
@@ -79,12 +88,16 @@ abstract class _AuthViewModelBase with Store {
       (verificationId, resendingToken) {
         currentState = VerificationState.OTP_STATE;
         verifyId = verificationId;
+        forceResendingToken = resendingToken;
+
         isLoadingVerification = false;
       },
       (verificationId) {
         isLoadingVerification = false;
+        resendButtonState = true;
       },
-      Duration(seconds: 90),
+      forceResendingToken,
+      Duration(seconds: timeOTPConfirmDuration),
     );
   }
 
@@ -101,6 +114,10 @@ abstract class _AuthViewModelBase with Store {
     } catch (e) {
       debugPrint(e.toString());
     }
+  }
+
+  Future<void> reSendOTPCode(BuildContext context) async {
+    await verifyPhoneNumber(context);
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -150,5 +167,6 @@ abstract class _AuthViewModelBase with Store {
 
   Future<void> saveUserDataFireStore(UserModel? usermodel) async {
     await firebaseCloudFirestore.saveUserData(usermodel!);
+    resendButtonState = false;
   }
 }

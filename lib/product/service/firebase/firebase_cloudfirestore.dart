@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../feature/auth/model/user_model.dart';
+import '../../../feature/chat/model/chatroom_model.dart';
 import '../../../feature/chat/model/message_model.dart';
 
 class FirebaseCloudFirestore {
@@ -140,59 +141,90 @@ class FirebaseCloudFirestore {
     }
   }
 
-  Future<CollectionReference<Map<String, dynamic>>?> findChatRoom(
+  Future<CollectionReference<Map<String, dynamic>>?> getPrivateChatRoom(
       String receiverId) async {
-    var _messageList = [];
+    var _currentId = _firebaseAuth.currentUser!.uid;
+    var roomid1 =
+        '0private' + _currentId.substring(0, 9) + receiverId.substring(0, 9);
+    var roomid2 =
+        '0private' + receiverId.substring(0, 9) + _currentId.substring(0, 9);
 
     final _chatRoom = await FirebaseFirestore.instance
         .collection('chatrooms')
-        .doc(_firebaseAuth.currentUser!.uid + receiverId)
+        .doc(roomid1)
         .collection('messages')
         .get()
-        .then((value) => _messageList.addAll(value.docs));
-    if (_messageList.isEmpty) {
+        .then((value) => value.docs.isNotEmpty ? true : false);
+    if (_chatRoom) {
       return FirebaseFirestore.instance
           .collection('chatrooms')
-          .doc(receiverId + _firebaseAuth.currentUser!.uid)
+          .doc(roomid1)
           .collection('messages');
     } else {
       return FirebaseFirestore.instance
           .collection('chatrooms')
-          .doc(_firebaseAuth.currentUser!.uid + receiverId)
+          .doc(roomid2)
           .collection('messages');
     }
   }
 
   Future<Query<Map<String, dynamic>>?> findChatRoomByOrder(
       String receiverId) async {
-    var _messageList = [];
+    var _currentId = _firebaseAuth.currentUser!.uid;
+    var roomid1 =
+        '0private' + _currentId.substring(0, 9) + receiverId.substring(0, 9);
+    var roomid2 =
+        '0private' + receiverId.substring(0, 9) + _currentId.substring(0, 9);
 
     final _chatRoom = await FirebaseFirestore.instance
         .collection('chatrooms')
-        .doc(_firebaseAuth.currentUser!.uid + receiverId)
+        .doc(roomid1)
         .collection('messages')
         .get()
-        .then((value) => _messageList.addAll(value.docs));
-    if (_messageList.isEmpty) {
+        .then((value) => value.docs.isNotEmpty ? true : false);
+    if (_chatRoom) {
       return FirebaseFirestore.instance
           .collection('chatrooms')
-          .doc(receiverId + _firebaseAuth.currentUser!.uid)
+          .doc(roomid1)
           .collection('messages')
           .orderBy('messageTime', descending: false);
     } else {
       return FirebaseFirestore.instance
           .collection('chatrooms')
-          .doc(_firebaseAuth.currentUser!.uid + receiverId)
+          .doc(roomid2)
           .collection('messages')
           .orderBy('messageTime', descending: false);
     }
   }
 
   Future<bool?> sendMessage(String message, String receiverId) async {
-    final _chatRoom = await findChatRoom(receiverId);
+    final _chatRoom = await getPrivateChatRoom(receiverId);
+    final _chatRoomData =
+        _chatRoom!.parent!.collection('features').doc('room-data');
+    final _currentSender = _firebaseAuth.currentUser!.uid;
+    final List<String> users = [_currentSender, receiverId];
+    final roomdata = await _chatRoom.parent!.parent
+        .get()
+        .then((value) => value.docs.isEmpty ? true : false);
     try {
-      await _chatRoom!.add(
-          new MessageModel(message: message, receiverId: receiverId).toJson());
+      if (roomdata) {
+        await FirebaseFirestore.instance
+            .collection('chatrooms')
+            .doc(_chatRoom.parent!.id)
+            .set(ChatRoom(
+                    usersId: users,
+                    creatingTime: DateTime.now(),
+                    id: _chatRoomData.parent.parent!.id)
+                .toJson());
+      }
+
+      await _chatRoom.add(MessageModel(
+              message: message,
+              receiverId: receiverId,
+              messageTime: DateTime.now(),
+              senderId: _currentSender)
+          .toJson());
+
       return true;
     } catch (e) {
       debugPrint(e.toString());

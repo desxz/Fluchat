@@ -1,3 +1,4 @@
+import 'package:argon_buttons_flutter/argon_buttons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -35,6 +36,13 @@ extension VerificationViewStateExtension on VerificationState {
         return OTPStateWidget(
           controller: vm.inputVerificationIdController,
           buttonText: 'CONFIRM',
+          duration: vm.timeOTPConfirmDuration,
+          onPressedResendButton: (startTimer, btnState) {
+            if (btnState == ButtonState.Idle) {
+              vm.reSendOTPCode(context);
+              startTimer(vm.timeOTPConfirmDuration);
+            }
+          },
           onPressed: () async {
             final _currentUser = await vm.verifyOTPCode();
             vm.user = _currentUser;
@@ -62,8 +70,8 @@ extension VerificationViewStateExtension on VerificationState {
               await vm.saveUserDataFireStore(vm.userModel);
               await statuses;
 
-              await NavigationService.instance
-                  .navigateToPage(path: NavigationConstants.TAB, data: vm.user);
+              await NavigationService.instance.navigateToPageClear(
+                  path: NavigationConstants.TAB, data: vm.user);
               vm.isLoadingUploadData = false;
             });
 

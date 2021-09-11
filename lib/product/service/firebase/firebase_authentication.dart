@@ -15,10 +15,12 @@ class FirebaseAuthService {
       void Function(FirebaseAuthException) verificationFailed,
       void Function(String, int?) codeSent,
       void Function(String) codeAutoRetrievalTimeout,
+      int? forceResendingToken,
       Duration? timeoutDuration) async {
     try {
       await auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
+        forceResendingToken: forceResendingToken,
         verificationCompleted: verificationCompleted,
         verificationFailed: verificationFailed,
         codeSent: codeSent,

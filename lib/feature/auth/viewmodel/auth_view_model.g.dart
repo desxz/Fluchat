@@ -42,6 +42,39 @@ mixin _$AuthViewModel on _AuthViewModelBase, Store {
     });
   }
 
+  final _$resendButtonStateAtom =
+      Atom(name: '_AuthViewModelBase.resendButtonState');
+
+  @override
+  bool get resendButtonState {
+    _$resendButtonStateAtom.reportRead();
+    return super.resendButtonState;
+  }
+
+  @override
+  set resendButtonState(bool value) {
+    _$resendButtonStateAtom.reportWrite(value, super.resendButtonState, () {
+      super.resendButtonState = value;
+    });
+  }
+
+  final _$timeOTPConfirmDurationAtom =
+      Atom(name: '_AuthViewModelBase.timeOTPConfirmDuration');
+
+  @override
+  int get timeOTPConfirmDuration {
+    _$timeOTPConfirmDurationAtom.reportRead();
+    return super.timeOTPConfirmDuration;
+  }
+
+  @override
+  set timeOTPConfirmDuration(int value) {
+    _$timeOTPConfirmDurationAtom
+        .reportWrite(value, super.timeOTPConfirmDuration, () {
+      super.timeOTPConfirmDuration = value;
+    });
+  }
+
   final _$imageAtom = Atom(name: '_AuthViewModelBase.image');
 
   @override
@@ -92,6 +125,8 @@ mixin _$AuthViewModel on _AuthViewModelBase, Store {
     return '''
 isLoadingVerification: ${isLoadingVerification},
 isLoadingUploadData: ${isLoadingUploadData},
+resendButtonState: ${resendButtonState},
+timeOTPConfirmDuration: ${timeOTPConfirmDuration},
 image: ${image},
 userModel: ${userModel},
 currentState: ${currentState}

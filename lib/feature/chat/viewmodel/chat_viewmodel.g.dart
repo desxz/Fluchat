@@ -24,10 +24,42 @@ mixin _$ChatViewModel on _ChatViewModelBase, Store {
     });
   }
 
+  final _$emojiStateAtom = Atom(name: '_ChatViewModelBase.emojiState');
+
+  @override
+  bool get emojiState {
+    _$emojiStateAtom.reportRead();
+    return super.emojiState;
+  }
+
+  @override
+  set emojiState(bool value) {
+    _$emojiStateAtom.reportWrite(value, super.emojiState, () {
+      super.emojiState = value;
+    });
+  }
+
+  final _$imageAtom = Atom(name: '_ChatViewModelBase.image');
+
+  @override
+  File? get image {
+    _$imageAtom.reportRead();
+    return super.image;
+  }
+
+  @override
+  set image(File? value) {
+    _$imageAtom.reportWrite(value, super.image, () {
+      super.image = value;
+    });
+  }
+
   @override
   String toString() {
     return '''
-messages: ${messages}
+messages: ${messages},
+emojiState: ${emojiState},
+image: ${image}
     ''';
   }
 }

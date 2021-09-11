@@ -113,8 +113,7 @@ class FriendsView extends StatelessWidget {
   FriendCard buildFriendCardTappableWidget(int index) {
     return FriendCard(
       onPressed: () => NavigationService.instance.navigateToPage(
-          path: NavigationConstants.CHAT,
-          data: _friendsVM.friendsList?[index] ?? []),
+          path: NavigationConstants.CHAT, data: _friendsVM.friendsList?[index]),
       name: _friendsVM.friendsList?[index]?.nameSurname,
       imageUrl: _friendsVM.friendsList?[index]?.imageUrl,
     );
