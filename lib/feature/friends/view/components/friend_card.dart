@@ -8,10 +8,12 @@ class FriendCard extends StatelessWidget {
     this.surname,
     this.imageUrl,
     this.onPressed,
+    this.statusMessage,
   }) : super(key: key);
 
   final String? name;
   final String? surname;
+  final String? statusMessage;
   final String? imageUrl;
   final VoidCallback? onPressed;
 
@@ -21,7 +23,7 @@ class FriendCard extends StatelessWidget {
       onTap: onPressed,
       child: ListTile(
         title: Text(name ?? 'Text'),
-        subtitle: Text(surname ?? 'Text'),
+        subtitle: Text(statusMessage ?? 'May the force be with you.'),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(40),
           child: CachedNetworkImage(

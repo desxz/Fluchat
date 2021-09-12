@@ -7,12 +7,14 @@ class UserModel {
   String? userid;
   String? phoneNumber;
   String? nameSurname;
+  String? statusMessage;
   String? imageUrl;
 
   UserModel({
     this.userid,
     this.phoneNumber,
     this.nameSurname,
+    this.statusMessage = 'May the force be with you.',
     this.imageUrl = 'http://www.gazeteguncel.com/d/news/185912.jpg',
   });
 

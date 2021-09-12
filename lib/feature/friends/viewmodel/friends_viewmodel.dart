@@ -13,7 +13,7 @@ class FriendsViewModel = _FriendsViewModelBase with _$FriendsViewModel;
 
 abstract class _FriendsViewModelBase with Store {
   _FriendsViewModelBase() {
-    addNewFriendFunction();
+    addNewFriendUsingDirectory();
   }
 
   final firebaseCloudFireStore = FirebaseCloudFirestore.instance;
@@ -41,7 +41,7 @@ abstract class _FriendsViewModelBase with Store {
     }
   }
 
-  Future<void> addNewFriendFunction() async {
+  Future<void> addNewFriendUsingDirectory() async {
     isLoadingData = true;
     await fetchContacts();
     debugPrint('Girdi 2');
@@ -49,6 +49,13 @@ abstract class _FriendsViewModelBase with Store {
     debugPrint('Girdi 3');
     await getFriendsData();
     debugPrint('Girdi 4');
+    isLoadingData = false;
+  }
+
+  Future<void> addNewFriendWithPhoneNumber(String phoneNumber) async {
+    isLoadingData = true;
+    await firebaseCloudFireStore.addFriends(phoneNumber);
+    await getFriendsData();
     isLoadingData = false;
   }
 

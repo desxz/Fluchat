@@ -15,23 +15,20 @@ class FirebaseCloudFirestore {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  Future<UserModel?>? getCurrentUserData(String uid) {
-    try {
-      final _currentUser = FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get()
-          .then((value) => UserModel().fromJson(value.data()!));
-      return _currentUser;
-    } catch (e) {
-      debugPrint(e.toString());
-    }
+  Future<UserModel?> getUserDataById(String userId) async {
+    var user = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .get()
+        .then((value) => UserModel().fromJson(value.data()!));
+    return user;
   }
 
-  Future<void> saveUserData(UserModel usermodel) async {
-    final user = FirebaseFirestore.instance
-        .collection('users')
-        .doc(_firebaseAuth.currentUser!.uid);
+  Future<void> saveUser(UserModel usermodel) async {
+    final currentUser = _firebaseAuth.currentUser!;
+
+    final user =
+        FirebaseFirestore.instance.collection('users').doc(currentUser.uid);
 
     try {
       await user.set(usermodel.toJson());
@@ -53,12 +50,14 @@ class FirebaseCloudFirestore {
   }
 
   Future<bool> addFriends(String userPhoneNumber) async {
+    final currentUser = _firebaseAuth.currentUser!;
+
     List<UserModel> _friendList = await searchFriendData(userPhoneNumber)!.then(
         (value) =>
             value!.docs.map((e) => UserModel().fromJson(e.data()!)).toList());
     final _friendsCol = FirebaseFirestore.instance
         .collection('users')
-        .doc(_firebaseAuth.currentUser!.uid)
+        .doc(currentUser.uid)
         .collection('friends')
         .doc(_friendList[0].userid);
     try {
@@ -72,6 +71,8 @@ class FirebaseCloudFirestore {
 
   Future<bool?> addFriendsFromPhoneDrirectory(
       Iterable<Contact> contacts) async {
+    final currentUser = _firebaseAuth.currentUser!;
+
     for (var item in contacts) {
       try {
         Map<String, dynamic> map = {};
@@ -89,7 +90,7 @@ class FirebaseCloudFirestore {
 
             await FirebaseFirestore.instance
                 .collection('users')
-                .doc(_firebaseAuth.currentUser!.uid)
+                .doc(currentUser.uid)
                 .collection('friends')
                 .doc(map['userid'])
                 .set(map);
@@ -105,29 +106,12 @@ class FirebaseCloudFirestore {
     return true;
   }
 
-  Future<bool?> addFriendsWithInvite(String userPhoneNumber) async {
-    List<UserModel> _friendList = await searchFriendData(userPhoneNumber)!.then(
-        (value) =>
-            value!.docs.map((e) => UserModel().fromJson(e.data()!)).toList());
-    final invitations = FirebaseFirestore.instance
-        .collection('users')
-        .doc(_friendList[0].userid)
-        .collection('invitations')
-        .doc(_firebaseAuth.currentUser!.uid);
-    final userData = await getCurrentUserData(_firebaseAuth.currentUser!.uid);
-    try {
-      final response = invitations.set(userData!.toJson());
-      return true;
-    } catch (e) {
-      debugPrint(e.toString());
-      return false;
-    }
-  }
-
   Future<List<UserModel?>?> fetchFriendsData() async {
+    final currentUser = _firebaseAuth.currentUser!;
+
     final _friendsCol = FirebaseFirestore.instance
         .collection('users')
-        .doc(_firebaseAuth.currentUser?.uid)
+        .doc(currentUser.uid)
         .collection('friends');
     List<UserModel> _friendsList = [];
     try {
@@ -141,9 +125,11 @@ class FirebaseCloudFirestore {
     }
   }
 
-  Future<CollectionReference<Map<String, dynamic>>?> getPrivateChatRoom(
-      String receiverId) async {
-    var _currentId = _firebaseAuth.currentUser!.uid;
+  Future<CollectionReference<Map<String, dynamic>>?>
+      getPrivateChatRoomCollection(String receiverId) async {
+    final currentUser = _firebaseAuth.currentUser!;
+
+    var _currentId = currentUser.uid;
     var roomid1 =
         '0private' + _currentId.substring(0, 9) + receiverId.substring(0, 9);
     var roomid2 =
@@ -170,7 +156,9 @@ class FirebaseCloudFirestore {
 
   Future<Query<Map<String, dynamic>>?> findChatRoomByOrder(
       String receiverId) async {
-    var _currentId = _firebaseAuth.currentUser!.uid;
+    final currentUser = _firebaseAuth.currentUser!;
+
+    var _currentId = currentUser.uid;
     var roomid1 =
         '0private' + _currentId.substring(0, 9) + receiverId.substring(0, 9);
     var roomid2 =
@@ -197,25 +185,56 @@ class FirebaseCloudFirestore {
     }
   }
 
+  Query<Map<String, dynamic>> getChatRooms() {
+    final currentUser = _firebaseAuth.currentUser!;
+
+    var _currentId = currentUser.uid;
+    final startQuery = '0private' + _currentId.substring(0, 9);
+    final endQuery = _currentId.substring(0, 9) + '~';
+
+    var rooms = FirebaseFirestore.instance
+        .collection('chatrooms')
+        .where('id', isGreaterThanOrEqualTo: startQuery)
+        .where('id', isLessThanOrEqualTo: endQuery);
+
+    print(rooms);
+
+    return rooms;
+  }
+
   Future<bool?> sendMessage(String message, String receiverId) async {
-    final _chatRoom = await getPrivateChatRoom(receiverId);
+    final currentUser = _firebaseAuth.currentUser!;
+
+    final _chatRoom = await getPrivateChatRoomCollection(receiverId);
     final _chatRoomData =
         _chatRoom!.parent!.collection('features').doc('room-data');
-    final _currentSender = _firebaseAuth.currentUser!.uid;
-    final List<String> users = [_currentSender, receiverId];
+    final _currentSender = currentUser.uid;
     final roomdata = await _chatRoom.parent!.parent
         .get()
         .then((value) => value.docs.isEmpty ? true : false);
+
+    final currentUserModel = await getUserDataById(currentUser.uid);
+    final receiverModel = await getUserDataById(receiverId);
+
     try {
       if (roomdata) {
         await FirebaseFirestore.instance
             .collection('chatrooms')
             .doc(_chatRoom.parent!.id)
             .set(ChatRoom(
-                    usersId: users,
-                    creatingTime: DateTime.now(),
-                    id: _chatRoomData.parent.parent!.id)
-                .toJson());
+              users: [currentUserModel!.toJson(), receiverModel!.toJson()],
+              id: _chatRoomData.parent.parent!.id,
+              lastMessage: DateTime.now(),
+            ).toJson());
+      } else {
+        FirebaseFirestore.instance
+            .collection('chatrooms')
+            .doc(_chatRoom.parent!.id)
+            .set(ChatRoom(
+              users: [currentUserModel!.toJson(), receiverModel!.toJson()],
+              id: _chatRoomData.parent.parent!.id,
+              lastMessage: DateTime.now(),
+            ).toJson());
       }
 
       await _chatRoom.add(MessageModel(

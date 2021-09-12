@@ -14,6 +14,7 @@ class VerificationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       key: _authVM.scaffoldKey,
       body: Observer(
         builder: (_) =>

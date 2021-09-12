@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 
 class UserFormStateWidget extends StatelessWidget {
   UserFormStateWidget({
@@ -36,34 +35,32 @@ class UserFormStateWidget extends StatelessWidget {
             onTap: () {
               selectImageSource(context);
             },
-            child: Observer(builder: (_) {
-              return Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: image == null
-                        ? Icon(
-                            Icons.camera_alt,
-                            size: 36,
-                          )
-                        : Image.file(
-                            image!,
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                          ),
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: image == null
+                      ? Icon(
+                          Icons.camera_alt,
+                          size: 36,
+                        )
+                      : Image.file(
+                          image!,
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.11,
+                  left: MediaQuery.of(context).size.width * 0.18,
+                  child: CircleAvatar(
+                    radius: 20,
+                    child: Icon(Icons.photo_camera),
                   ),
-                  Positioned(
-                    top: MediaQuery.of(context).size.height * 0.11,
-                    left: MediaQuery.of(context).size.width * 0.18,
-                    child: CircleAvatar(
-                      radius: 20,
-                      child: Icon(Icons.photo_camera),
-                    ),
-                  ),
-                ],
-              );
-            }),
+                ),
+              ],
+            ),
           ),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.15,

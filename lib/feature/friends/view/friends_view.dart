@@ -30,7 +30,7 @@ class FriendsView extends StatelessWidget {
   TextField get buildTextFieldAddNewFriendEmail {
     return TextField(
       controller: _friendsVM.inputPhoneNumberController,
-      decoration: InputDecoration(hintText: 'Email'),
+      decoration: InputDecoration(hintText: 'Phone Number'),
     );
   }
 
@@ -39,7 +39,10 @@ class FriendsView extends StatelessWidget {
       onPressed: _friendsVM.inputPhoneNumberController.text ==
               _friendsVM.firebaseAuthService.auth.currentUser!.phoneNumber
           ? () {}
-          : _friendsVM.addNewFriendFunction,
+          : () => _friendsVM
+              .addNewFriendWithPhoneNumber(
+                  _friendsVM.inputPhoneNumberController.text)
+              .then((value) => _friendsVM.inputPhoneNumberController.text = ''),
       child: Text('Add friend'),
     );
   }

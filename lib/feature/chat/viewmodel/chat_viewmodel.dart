@@ -60,13 +60,14 @@ abstract class _ChatViewModelBase with Store {
   }
 
   Future<ChatRoom> findChatRoom() async {
-    final room = await firebaseCloudFireStore.getPrivateChatRoom(user!.userid!);
+    final room = await firebaseCloudFireStore
+        .getPrivateChatRoomCollection(user!.userid!);
     print(room!.parent!.id.toString());
 
     return ChatRoom(
       id: room.parent!.id,
-      usersId: [senderID, user!.userid!],
-      creatingTime: DateTime.now(),
+      //usersId: [senderID, user!.userid!],
+      //creatingTime: DateTime.now(),
     );
   }
 

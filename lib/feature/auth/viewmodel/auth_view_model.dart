@@ -166,7 +166,7 @@ abstract class _AuthViewModelBase with Store {
   }
 
   Future<void> saveUserDataFireStore(UserModel? usermodel) async {
-    await firebaseCloudFirestore.saveUserData(usermodel!);
+    await firebaseCloudFirestore.saveUser(usermodel!);
     resendButtonState = false;
   }
 }

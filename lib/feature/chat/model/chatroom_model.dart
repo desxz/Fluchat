@@ -5,13 +5,15 @@ part 'chatroom_model.g.dart';
 @JsonSerializable()
 class ChatRoom {
   String? id;
-  List<String>? usersId;
-  DateTime? creatingTime;
+  List<Map<String, dynamic>?>? users;
+  //DateTime? creatingTime;
+  DateTime? lastMessage;
 
   ChatRoom({
     this.id,
-    this.usersId,
-    this.creatingTime,
+    this.users,
+    //this.creatingTime,
+    this.lastMessage,
   });
 
   ChatRoom fromJson(Map<String, dynamic> json) => _$ChatRoomFromJson(json);
